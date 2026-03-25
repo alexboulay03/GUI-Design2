@@ -284,7 +284,9 @@ instruction_calibration = ctk.CTkLabel(
     text = "Déposez une masse à la fois en ordre croissant, suivant les valeurs indiquées ci-dessous. " \
     "À chaque fois que vous déposez une masse, cliquez sur la valeur de cette masse pour enregistrer le point. " \
     "Cliquez sur 'Envoyer' une fois que tous les points ont été enregistrés.",
-    font=("Roboto", 15, "bold")
+    font=("Roboto", 15, "bold"),
+    wraplength=500,
+    justify="center"
 )
 instruction_calibration.pack(pady=(10, 20))
 

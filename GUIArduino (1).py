@@ -290,6 +290,7 @@ instruction_calibration = ctk.CTkLabel(
 )
 instruction_calibration.pack(pady=(10, 20))
 
+
 btn_Zero = ctk.CTkButton(Cal_frame, text="0g", command=lambda:Cal(0), fg_color="#27ae60", hover_color="#2ecc71")
 btn_Zero.pack(pady=5)
 

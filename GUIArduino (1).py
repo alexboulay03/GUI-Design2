@@ -278,7 +278,8 @@ btn_Set.pack(pady=20)
 
 # === VUE 3 : MODE Calibration ===
 Cal_frame = ctk.CTkFrame(content_frame)
-
+# Liste initiale des poids pour le menu déroulant
+valeurs_poids = ["0", "20", "40", "60", "80", "100"]
 instruction_calibration = ctk.CTkLabel(
     Cal_frame,
     text = "Déposez une masse à la fois en ordre croissant, suivant les valeurs indiquées ci-dessous. " \
@@ -289,19 +290,44 @@ instruction_calibration = ctk.CTkLabel(
     justify="center"
 )
 instruction_calibration.pack(pady=(10, 20))
+def envoyer_poids_selectionne():
+    # 1. Récupère la valeur sélectionnée dans le menu déroulant
+    selection = menu_poids.get()
+    
+    # 2. Extrait le nombre brut (enlève le " ✓" s'il a déjà été cliqué)
+    poids_brut = selection.replace(" ✓", "")
+    
+    # 3. Envoie la commande à l'Arduino via ta fonction existante
+    Cal(int(poids_brut))
+    
+    # 4. Met à jour la liste pour ajouter le crochet à côté de ce poids
+    for i in range(len(valeurs_poids)):
+        # On cherche l'élément correspondant au poids brut
+        if valeurs_poids[i].replace(" ✓", "") == poids_brut:
+            valeurs_poids[i] = f"{poids_brut} ✓"
+            
+    # 5. Met à jour le menu déroulant avec les nouvelles valeurs (avec le crochet)
+    menu_poids.configure(values=valeurs_poids)
+    menu_poids.set(f"{poids_brut} ✓") # Garde la sélection actuelle visible à l'écran
 
+# --- Éléments de l'interface ---
 
-btn_Zero = ctk.CTkButton(Cal_frame, text="0g", command=lambda:Cal(0), fg_color="#27ae60", hover_color="#2ecc71")
-btn_Zero.pack(pady=5)
+# Menu déroulant (Drop down menu)
+menu_poids = ctk.CTkOptionMenu(Cal_frame, values=valeurs_poids, width=150)
+menu_poids.pack(pady=15)
+menu_poids.set("0") # Valeur par défaut affichée
 
-btn_50 = ctk.CTkButton(Cal_frame, text="50g", command=lambda:Cal(50), fg_color="#27ae60", hover_color="#2ecc71")
-btn_50.pack(pady=5)
+# Bouton pour envoyer le poids spécifique sélectionné dans le menu
+btn_Envoyer_Poids = ctk.CTkButton(Cal_frame, text="Envoyer le poids sélectionné", command=envoyer_poids_selectionne, fg_color="#3498db", hover_color="#2980b9")
+btn_Envoyer_Poids.pack(pady=10)
 
-btn_100 = ctk.CTkButton(Cal_frame, text="100g", command=lambda:Cal(100), fg_color="#27ae60", hover_color="#2ecc71")
-btn_100.pack(pady=5)
+# Espace de séparation visuelle (optionnel mais plus propre)
+separation = ctk.CTkFrame(Cal_frame, height=2, width=200, fg_color="gray")
+separation.pack(pady=15)
 
-btn_Done = ctk.CTkButton(Cal_frame, text="Envoyer", command=lambda:Cal(200), fg_color="#27ae60", hover_color="#2ecc71")
-btn_Done.pack(pady=5)
+# Bouton de validation finale (Garde ta fonction Cal(200))
+btn_Done = ctk.CTkButton(Cal_frame, text="Envoyer (Terminer)", command=lambda:Cal(200), fg_color="#27ae60", hover_color="#2ecc71")
+btn_Done.pack(pady=10)
 
 # Fermeture propre
 def on_closing():

@@ -281,8 +281,7 @@ Cal_frame = ctk.CTkFrame(content_frame)
 
 instruction_calibration = ctk.CTkLabel(
     Cal_frame,
-    text = "Déposez une masse à la fois en ordre croissant, suivant les valeurs indiquées ci-dessous. " \
-    "À chaque fois que vous déposez une masse, cliquez sur la valeur de cette masse pour enregistrer le point. " \
+    text = "Déposez une masse puis cliquez sur la valeur de cette masse pour enregistrer le point. " \
     "Cliquez sur 'Envoyer' une fois que tous les points ont été enregistrés.",
     font=("Roboto", 15, "bold"),
     wraplength=500,

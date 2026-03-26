@@ -218,7 +218,7 @@ normal_frame = ctk.CTkFrame(content_frame, fg_color="transparent")
 
 instruction_acquisition = ctk.CTkLabel(
     normal_frame,
-    text="Pour débuter la prise de mesure, cliquez sur 'Acquisition'",
+    text="Connectez vous et cliquez sur 'Acquisition' pour débuter la prise de mesure",
     font=("Roboto", 20, "bold")
 )
 instruction_acquisition.pack(pady=(10, 20))

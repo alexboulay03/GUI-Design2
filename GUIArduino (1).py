@@ -218,7 +218,8 @@ normal_frame = ctk.CTkFrame(content_frame, fg_color="transparent")
 
 instruction_acquisition = ctk.CTkLabel(
     normal_frame,
-    text="Pour débuter la prise de mesure, cliquez sur 'Acquisition'",
+    text="Cliquez sur 'Connecter' et puis sur 'Acquisition' " \
+    "pour débuter la prise de mesure",
     font=("Roboto", 20, "bold")
 )
 instruction_acquisition.pack(pady=(10, 20))
@@ -239,7 +240,7 @@ normal_frame.pack(fill="both", expand=True)
 # === VUE 2 : MODE SETUP ===
 setup_frame = ctk.CTkFrame(content_frame)
 
-setup_title = ctk.CTkLabel(setup_frame, text="Définir les gains de régulateur", font=("Roboto", 20, "bold"))
+setup_title = ctk.CTkLabel(setup_frame, text="Définir les gains de chaque régulateur", font=("Roboto", 20, "bold"))
 setup_title.pack(pady=20)
 
 
@@ -282,9 +283,9 @@ Cal_frame = ctk.CTkFrame(content_frame)
 valeurs_poids = ["0", "20", "40", "60", "80", "100"]
 instruction_calibration = ctk.CTkLabel(
     Cal_frame,
-    text = "Déposez une masse à la fois en ordre croissant, suivant les valeurs indiquées ci-dessous. " \
-    "À chaque fois que vous déposez une masse, cliquez sur la valeur de cette masse pour enregistrer le point. " \
-    "Cliquez sur 'Envoyer' une fois que tous les points ont été enregistrés.",
+    text = "Pour calibrer, déposez une masse puis enregistrez le point en indiquant la valeur de cette masse. " \
+    ""\
+    "Cliquez sur 'Envoyer' une fois que tous les points sont enregistrés.",
     font=("Roboto", 15, "bold"),
     wraplength=500,
     justify="center"

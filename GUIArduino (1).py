@@ -71,12 +71,15 @@ def update_data_display(data):
     latest_reading = data
     
     try:
-        # On essaie de convertir en float
-        valeur_numerique = float(data)
-        data_label.configure(text=f"{valeur_numerique:.1f} g")
+        valeur_en_grammes = float(data)
+        unite_actuelle = menu_unite.get()
+        
+        # Appel de la fonction de conversion
+        valeur_convertie = convertir_poids(valeur_en_grammes, unite_actuelle)
+        
+        # Mise à jour de l'affichage avec 2 décimales et la bonne unité
+        data_label.configure(text=f"{valeur_convertie:.2f} {unite_actuelle}")
     except ValueError:
-        # Si c'est du texte (comme une erreur de l'Arduino), on l'affiche dans la console
-        # ou on l'ignore sans faire planter le GUI
         print(f"Message de l'Arduino (non-numérique) : {data}")
 
 # --- 4. Commandes ---
@@ -96,7 +99,18 @@ def executer_cal_et_tare():
     if is_acquiring and arduino and arduino.is_open:
         Cal(0)
         # On peut même rajouter un petit délai entre le Cal et le Tare si l'Arduino en a besoin
-        app.after(1000, tare)
+        app.after(500, tare)
+
+def convertir_poids(valeur_g, unite_cible):
+    """Convertit les grammes vers l'unité sélectionnée."""
+    if unite_cible == "oz":
+        return valeur_g * 0.03527396
+    elif unite_cible == "N":
+        # Force = masse (en kg) * accélération (gravité)
+        return (valeur_g / 1000.0) * 9.80665
+    else:
+        # Par défaut, on retourne les grammes
+        return valeur_g
 
 def tare():
     global latest_reading
@@ -109,7 +123,7 @@ def tare():
 # --- 5. Changement de Mode (NOUVEAU) ---
 def change_mode(choice):
     """Bascule entre l'affichage Normal et l'affichage Setup."""
-    if choice == "Mode Normal":
+    if choice == "Mode Balance":
         # Cacher le setup, afficher le normal
         setup_frame.pack_forget()
         Cal_frame.pack_forget()
@@ -329,6 +343,27 @@ separation.pack(pady=15)
 # Bouton de validation finale (Garde ta fonction Cal(200))
 btn_Done = ctk.CTkButton(Cal_frame, text="Envoyer (Terminer)", command=lambda:Cal(200), fg_color="#27ae60", hover_color="#2ecc71")
 btn_Done.pack(pady=10)
+
+def on_unite_change(nouvelle_unite):
+    """Met à jour l'affichage immédiatement quand on change d'unité via le menu."""
+    global latest_reading
+    try:
+        valeur_en_grammes = float(latest_reading)
+        valeur_convertie = convertir_poids(valeur_en_grammes, nouvelle_unite)
+        data_label.configure(text=f"{valeur_convertie:.2f} {nouvelle_unite}")
+    except ValueError:
+        pass # Ignore si aucune donnée valide n'a encore été reçue
+
+# Menu déroulant (Drop down menu) pour les unités
+unites_disponibles = ["g", "oz", "N"]
+menu_unite = ctk.CTkOptionMenu(
+    normal_frame, 
+    values=unites_disponibles, 
+    width=150, 
+    command=on_unite_change # Appelle la fonction lors du changement
+)
+menu_unite.pack(pady=15)
+menu_unite.set("g") # Valeur par défaut
 
 # Fermeture propre
 def on_closing():

@@ -120,21 +120,16 @@ def tare():
 
 # --- 5. Changement de Mode (NOUVEAU) ---
 def change_mode(choice):
-    """Bascule entre l'affichage Normal et l'affichage Setup."""
-    if choice == "Mode Balance":
-        # Cacher le setup, afficher le normal
-        setup_frame.pack_forget()
-        Cal_frame.pack_forget()
+    """Bascule entre les différentes vues."""
+    normal_frame.pack_forget()
+    setup_frame.pack_forget()
+    Cal_frame.pack_forget()
+
+    if choice == "Mode Normal":
         normal_frame.pack(fill="both", expand=True, pady=10)
     elif choice == "Mode Setup":
-        # Cacher le normal, afficher le setup
-        normal_frame.pack_forget()
-        Cal_frame.pack_forget()
         setup_frame.pack(fill="both", expand=True, pady=10)
     elif choice == "Mode Calibration":
-        # Cacher le normal, afficher le setup
-        normal_frame.pack_forget()
-        setup_frame.pack_forget()
         Cal_frame.pack(fill="both", expand=True, pady=10)
 
 def save_setup():

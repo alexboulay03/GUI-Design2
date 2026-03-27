@@ -97,8 +97,6 @@ def start_acquisition():
 
 def executer_cal_et_tare():
     if is_acquiring and arduino and arduino.is_open:
-        Cal(0)
-        # On peut même rajouter un petit délai entre le Cal et le Tare si l'Arduino en a besoin
         app.after(500, tare)
 
 def convertir_poids(valeur_g, unite_cible):

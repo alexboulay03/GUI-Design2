@@ -78,7 +78,7 @@ def update_data_display(data):
         valeur_convertie = convertir_poids(valeur_en_grammes, unite_actuelle)
         
         # Mise à jour de l'affichage avec 2 décimales et la bonne unité
-        data_label.configure(text=f"{valeur_convertie:.2f} {unite_actuelle}")
+        data_label.configure(text=f"{valeur_convertie:.1f} {unite_actuelle}")
     except ValueError:
         print(f"Message de l'Arduino (non-numérique) : {data}")
 
@@ -342,6 +342,7 @@ def envoyer_calibration():
     if all(valeur in valeurs_poids for valeur in valeurs_attendues):
         Cal(200)
         status_label.configure(text="Status: Calibration effectuée", text_color="#2ecc71")
+        app.after(1000, executer_cal_et_tare)
     else:
         status_label.configure(text="Erreur: Il manque une mesure de masse", text_color="#e74c3c")
 
@@ -363,7 +364,7 @@ def on_unite_change(nouvelle_unite):
     try:
         valeur_en_grammes = float(latest_reading)
         valeur_convertie = convertir_poids(valeur_en_grammes, nouvelle_unite)
-        data_label.configure(text=f"{valeur_convertie:.2f} {nouvelle_unite}")
+        data_label.configure(text=f"{valeur_convertie:.1f} {nouvelle_unite}")
     except ValueError:
         pass # Ignore si aucune donnée valide n'a encore été reçue
 

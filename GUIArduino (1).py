@@ -298,6 +298,7 @@ instruction_calibration = ctk.CTkLabel(
     justify="center"
 )
 instruction_calibration.pack(pady=(10, 20))
+
 def envoyer_poids_selectionne():
     # 1. Récupère la valeur sélectionnée dans le menu déroulant
     selection = menu_poids.get()
@@ -318,6 +319,7 @@ def envoyer_poids_selectionne():
     menu_poids.configure(values=valeurs_poids)
     menu_poids.set(f"{poids_brut} ✓") # Garde la sélection actuelle visible à l'écran
 
+
 # --- Éléments de l'interface ---
 
 # Menu déroulant (Drop down menu)
@@ -326,8 +328,17 @@ menu_poids.pack(pady=15)
 menu_poids.set("0") # Valeur par défaut affichée
 
 # Bouton pour envoyer le poids spécifique sélectionné dans le menu
-btn_Envoyer_Poids = ctk.CTkButton(Cal_frame, text="Envoyer le poids sélectionné", command=envoyer_poids_selectionne, fg_color="#3498db", hover_color="#2980b9")
+btn_Envoyer_Poids = ctk.CTkButton(Cal_frame, text="Envoyer la masse sélectionnée", command=envoyer_poids_selectionne, fg_color="#3498db", hover_color="#2980b9")
 btn_Envoyer_Poids.pack(pady=10)
+
+def envoyer_calibration():
+    valeurs_attendues = ["0 ✓", "20 ✓", "40 ✓", "60 ✓", "80 ✓", "100 ✓"]
+    
+    if all(valeur in valeurs_poids for valeur in valeurs_attendues):
+        status_label.configure(text="Status: Calibration effectuée", text_color="#2ecc71")
+        Cal(200)
+    else:
+        status_label.configure(text="Erreur: Il manque une mesure de masse", text_color="#e74c3c")
 
 # Espace de séparation visuelle (optionnel mais plus propre)
 separation = ctk.CTkFrame(Cal_frame, height=2, width=200, fg_color="gray")

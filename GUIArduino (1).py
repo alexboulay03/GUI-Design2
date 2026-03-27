@@ -97,7 +97,7 @@ def start_acquisition():
 
 def executer_cal_et_tare():
     if is_acquiring and arduino and arduino.is_open:
-        app.after(500, tare)
+        app.after(1000, tare)
 
 def convertir_poids(valeur_g, unite_cible):
     """Convertit les grammes vers l'unité sélectionnée."""
@@ -331,22 +331,31 @@ menu_poids.set("0") # Valeur par défaut affichée
 btn_Envoyer_Poids = ctk.CTkButton(Cal_frame, text="Envoyer la masse sélectionnée", command=envoyer_poids_selectionne, fg_color="#3498db", hover_color="#2980b9")
 btn_Envoyer_Poids.pack(pady=10)
 
-def envoyer_calibration():
-    valeurs_attendues = ["0 ✓", "20 ✓", "40 ✓", "60 ✓", "80 ✓", "100 ✓"]
-    
-    if all(valeur in valeurs_poids for valeur in valeurs_attendues):
-        status_label.configure(text="Status: Calibration effectuée", text_color="#2ecc71")
-        Cal(200)
-    else:
-        status_label.configure(text="Erreur: Il manque une mesure de masse", text_color="#e74c3c")
-
 # Espace de séparation visuelle (optionnel mais plus propre)
 separation = ctk.CTkFrame(Cal_frame, height=2, width=200, fg_color="gray")
 separation.pack(pady=15)
 
+# Confirmer l'enovoie des masses/courant
+def envoyer_calibration():
+    valeurs_attendues = ["0 ✓", "20 ✓", "40 ✓", "60 ✓", "80 ✓", "100 ✓"]
+    
+    if all(valeur in valeurs_poids for valeur in valeurs_attendues):
+        Cal(200)
+        status_label.configure(text="Status: Calibration effectuée", text_color="#2ecc71")
+    else:
+        status_label.configure(text="Erreur: Il manque une mesure de masse", text_color="#e74c3c")
+
 # Bouton de validation finale (Garde ta fonction Cal(200))
-btn_Done = ctk.CTkButton(Cal_frame, text="Envoyer (Terminer)", command=lambda:Cal(200), fg_color="#27ae60", hover_color="#2ecc71")
+#btn_Done = ctk.CTkButton(Cal_frame, text="Envoyer (Terminer)", command=lambda:Cal(200), fg_color="#27ae60", hover_color="#2ecc71")
+btn_Done = ctk.CTkButton(
+    Cal_frame,
+    text="Envoyer (Terminer)",
+    command=envoyer_calibration,
+    fg_color="#27ae60",
+    hover_color="#2ecc71"
+)
 btn_Done.pack(pady=10)
+
 
 def on_unite_change(nouvelle_unite):
     """Met à jour l'affichage immédiatement quand on change d'unité via le menu."""

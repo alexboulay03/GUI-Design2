@@ -188,7 +188,7 @@ ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
 app = ctk.CTk()
-app.geometry("700x700") # Agrandie pour le nouveau menu
+app.geometry("900x700") # Agrandie pour le nouveau menu
 app.title("Arduino GUI")
 
 # --- Barre Supérieure (Connexion & Mode) ---
@@ -257,31 +257,31 @@ setup_title.pack(pady=20)
 KpPos_label = ctk.CTkLabel(setup_frame, text="Kp Position:")
 KpPos_label.pack(pady=5)
 
-KpPos_entry = ctk.CTkEntry(setup_frame, placeholder_text="Ex: 1.5")
+KpPos_entry = ctk.CTkEntry(setup_frame, placeholder_text="0.15")
 KpPos_entry.pack(pady=5)
 
 KiPos_label = ctk.CTkLabel(setup_frame, text="Ki Position:")
 KiPos_label.pack(pady=5)
 
-KiPos_entry = ctk.CTkEntry(setup_frame, placeholder_text="Ex: 1.5")
+KiPos_entry = ctk.CTkEntry(setup_frame, placeholder_text="2.3")
 KiPos_entry.pack(pady=5)
 
 KdPos_label = ctk.CTkLabel(setup_frame, text="Kd Position:")
 KdPos_label.pack(pady=5)
 
-KdPos_entry = ctk.CTkEntry(setup_frame, placeholder_text="Ex: 1.5")
+KdPos_entry = ctk.CTkEntry(setup_frame, placeholder_text="0.02")
 KdPos_entry.pack(pady=5)
 
 KpCour_label = ctk.CTkLabel(setup_frame, text="Kp Courant:")
 KpCour_label.pack(pady=5)
 
-KpCour_entry = ctk.CTkEntry(setup_frame, placeholder_text="Ex: 1.5")
+KpCour_entry = ctk.CTkEntry(setup_frame, placeholder_text="0.25")
 KpCour_entry.pack(pady=5)
 
 KiCour_label = ctk.CTkLabel(setup_frame, text="Ki Courant:")
 KiCour_label.pack(pady=5)
 
-KiCour_entry = ctk.CTkEntry(setup_frame, placeholder_text="Ex: 1.5")
+KiCour_entry = ctk.CTkEntry(setup_frame, placeholder_text="2.4")
 KiCour_entry.pack(pady=5)
 
 btn_Set = ctk.CTkButton(setup_frame, text="Envoyer", command=SetPID)

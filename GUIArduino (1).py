@@ -78,7 +78,7 @@ def update_data_display(data):
         valeur_convertie = convertir_poids(valeur_en_grammes, unite_actuelle)
         
         # Mise à jour de l'affichage avec 2 décimales et la bonne unité
-        data_label.configure(text=f"{valeur_convertie:.2f} {unite_actuelle}")
+        data_label.configure(text=f"{valeur_convertie:.1f} {unite_actuelle}")
     except ValueError:
         print(f"Message de l'Arduino (non-numérique) : {data}")
 
@@ -93,11 +93,11 @@ def start_acquisition():
         is_acquiring = True 
         threading.Thread(target=read_serial_data, daemon=True).start()
         status_label.configure(text="Status: Acquisition en cours", text_color="#2ecc71")
-        app.after(1000, executer_cal_et_tare)
+        app.after(1000, executer_cal_et_tare())
 
 def executer_cal_et_tare():
     if is_acquiring and arduino and arduino.is_open:
-        app.after(500, tare)
+        app.after(500, tare())
 
 def convertir_poids(valeur_g, unite_cible):
     """Convertit les grammes vers l'unité sélectionnée."""
@@ -121,7 +121,7 @@ def tare():
 # --- 5. Changement de Mode (NOUVEAU) ---
 def change_mode(choice):
     """Bascule entre l'affichage Normal et l'affichage Setup."""
-    if choice == "Mode Balance":
+    if choice == "Mode Normal":
         # Cacher le setup, afficher le normal
         setup_frame.pack_forget()
         Cal_frame.pack_forget()
@@ -180,7 +180,7 @@ def Cal(poid):
         arduino.write(message.encode('utf-8'))
         print(f"Mise à jour envoyée : {message.strip()}")
         if poid == 200:
-            tare()
+            app.after(500, tare())
 
     # Vous pourriez envoyer ça à l'Arduino ici : arduino.write(f"CAL:{cal_value}\n".encode('utf-8'))
 
@@ -297,7 +297,8 @@ instruction_calibration = ctk.CTkLabel(
     Cal_frame,
     text = "Pour calibrer, déposez une masse puis enregistrez le point en indiquant la valeur de cette masse. " \
     ""\
-    "Cliquez sur 'Envoyer' une fois que tous les points sont enregistrés.",
+    "Cliquez sur 'Envoyer' une fois que tous les points sont enregistrés. Une fois envoyé, " \
+    "retirer les masses de la balamnce",
     font=("Roboto", 15, "bold"),
     wraplength=500,
     justify="center"
@@ -348,7 +349,7 @@ def on_unite_change(nouvelle_unite):
     try:
         valeur_en_grammes = float(latest_reading)
         valeur_convertie = convertir_poids(valeur_en_grammes, nouvelle_unite)
-        data_label.configure(text=f"{valeur_convertie:.2f} {nouvelle_unite}")
+        data_label.configure(text=f"{valeur_convertie:.1f} {nouvelle_unite}")
     except ValueError:
         pass # Ignore si aucune donnée valide n'a encore été reçue
 

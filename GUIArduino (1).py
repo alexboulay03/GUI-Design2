@@ -97,7 +97,7 @@ def start_acquisition():
 
 def executer_cal_et_tare():
     if is_acquiring and arduino and arduino.is_open:
-        app.after(500, tare())
+        app.after(500, tare)
 
 def convertir_poids(valeur_g, unite_cible):
     """Convertit les grammes vers l'unité sélectionnée."""
@@ -121,20 +121,14 @@ def tare():
 # --- 5. Changement de Mode (NOUVEAU) ---
 def change_mode(choice):
     """Bascule entre l'affichage Normal et l'affichage Setup."""
-    if choice == "Mode Normal":
+    if choice == "Mode Balance":
         # Cacher le setup, afficher le normal
         setup_frame.pack_forget()
         Cal_frame.pack_forget()
         normal_frame.pack(fill="both", expand=True, pady=10)
     elif choice == "Mode Setup":
-        # Cacher le normal, afficher le setup
-        normal_frame.pack_forget()
-        Cal_frame.pack_forget()
         setup_frame.pack(fill="both", expand=True, pady=10)
     elif choice == "Mode Calibration":
-        # Cacher le normal, afficher le setup
-        normal_frame.pack_forget()
-        setup_frame.pack_forget()
         Cal_frame.pack(fill="both", expand=True, pady=10)
 
 def save_setup():
@@ -304,6 +298,7 @@ instruction_calibration = ctk.CTkLabel(
     justify="center"
 )
 instruction_calibration.pack(pady=(10, 20))
+
 def envoyer_poids_selectionne():
     # 1. Récupère la valeur sélectionnée dans le menu déroulant
     selection = menu_poids.get()
@@ -324,6 +319,7 @@ def envoyer_poids_selectionne():
     menu_poids.configure(values=valeurs_poids)
     menu_poids.set(f"{poids_brut} ✓") # Garde la sélection actuelle visible à l'écran
 
+
 # --- Éléments de l'interface ---
 
 # Menu déroulant (Drop down menu)
@@ -332,16 +328,35 @@ menu_poids.pack(pady=15)
 menu_poids.set("0") # Valeur par défaut affichée
 
 # Bouton pour envoyer le poids spécifique sélectionné dans le menu
-btn_Envoyer_Poids = ctk.CTkButton(Cal_frame, text="Envoyer le poids sélectionné", command=envoyer_poids_selectionne, fg_color="#3498db", hover_color="#2980b9")
+btn_Envoyer_Poids = ctk.CTkButton(Cal_frame, text="Envoyer la masse sélectionnée", command=envoyer_poids_selectionne, fg_color="#3498db", hover_color="#2980b9")
 btn_Envoyer_Poids.pack(pady=10)
 
 # Espace de séparation visuelle (optionnel mais plus propre)
 separation = ctk.CTkFrame(Cal_frame, height=2, width=200, fg_color="gray")
 separation.pack(pady=15)
 
+# Confirmer l'enovoie des masses/courant
+def envoyer_calibration():
+    valeurs_attendues = ["0 ✓", "20 ✓", "40 ✓", "60 ✓", "80 ✓", "100 ✓"]
+    
+    if all(valeur in valeurs_poids for valeur in valeurs_attendues):
+        Cal(200)
+        status_label.configure(text="Status: Calibration effectuée", text_color="#2ecc71")
+        app.after(1000, executer_cal_et_tare)
+    else:
+        status_label.configure(text="Erreur: Il manque une mesure de masse", text_color="#e74c3c")
+
 # Bouton de validation finale (Garde ta fonction Cal(200))
-btn_Done = ctk.CTkButton(Cal_frame, text="Envoyer (Terminer)", command=lambda:Cal(200), fg_color="#27ae60", hover_color="#2ecc71")
+#btn_Done = ctk.CTkButton(Cal_frame, text="Envoyer (Terminer)", command=lambda:Cal(200), fg_color="#27ae60", hover_color="#2ecc71")
+btn_Done = ctk.CTkButton(
+    Cal_frame,
+    text="Envoyer (Terminer)",
+    command=envoyer_calibration,
+    fg_color="#27ae60",
+    hover_color="#2ecc71"
+)
 btn_Done.pack(pady=10)
+
 
 def on_unite_change(nouvelle_unite):
     """Met à jour l'affichage immédiatement quand on change d'unité via le menu."""

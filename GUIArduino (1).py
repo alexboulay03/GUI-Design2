@@ -93,7 +93,7 @@ def start_acquisition():
         is_acquiring = True 
         threading.Thread(target=read_serial_data, daemon=True).start()
         status_label.configure(text="Status: Acquisition en cours", text_color="#2ecc71")
-        app.after(1000, executer_cal_et_tare())
+        app.after(1000, executer_cal_et_tare)
 
 def executer_cal_et_tare():
     if is_acquiring and arduino and arduino.is_open:
@@ -121,7 +121,11 @@ def tare():
 # --- 5. Changement de Mode (NOUVEAU) ---
 def change_mode(choice):
     """Bascule entre l'affichage Normal et l'affichage Setup."""
-    if choice == "Mode Balance":
+    # 1. On commence par cacher TOUTES les frames pour faire place nette
+    normal_frame.pack_forget()
+    setup_frame.pack_forget()
+    Cal_frame.pack_forget()
+    if choice == "Mode Normal":
         # Cacher le setup, afficher le normal
         setup_frame.pack_forget()
         Cal_frame.pack_forget()
@@ -174,7 +178,7 @@ def Cal(poid):
         arduino.write(message.encode('utf-8'))
         print(f"Mise à jour envoyée : {message.strip()}")
         if poid == 200:
-            app.after(500, tare())
+            app.after(500, tare)
 
     # Vous pourriez envoyer ça à l'Arduino ici : arduino.write(f"CAL:{cal_value}\n".encode('utf-8'))
 
@@ -292,7 +296,7 @@ instruction_calibration = ctk.CTkLabel(
     text = "Pour calibrer, déposez une masse puis enregistrez le point en indiquant la valeur de cette masse. " \
     ""\
     "Cliquez sur 'Envoyer' une fois que tous les points sont enregistrés. Une fois envoyé, " \
-    "retirer les masses de la balamnce",
+    "retirer les masses de la balance",
     font=("Roboto", 15, "bold"),
     wraplength=500,
     justify="center"

@@ -43,29 +43,41 @@ def connect_serial():
         arduino = None
 
 # --- 3. Thread de Lecture ---
-# --- 3. Thread de Lecture ---
 def read_serial_data():
     global is_acquiring
     while is_acquiring and arduino and arduino.is_open:
         try:
-            # On englobe in_waiting DANS le try pour intercepter la déconnexion
             if arduino.in_waiting > 0:
                 raw_data = arduino.readline().decode('utf-8').strip()
                 if raw_data:
-                    app.after(0, update_data_display, raw_data)
-            
-            # Pause de 10 millisecondes (VITAL pour laisser respirer le CPU)
+                    # On sépare la chaîne de caractères à chaque virgule
+                    valeurs = raw_data.split(',')
+                    
+                    # CAS 1 : On reçoit 2 valeurs (Les coefficients de calibration)
+                    if len(valeurs) == 3:
+                        try:
+                            valeur_x2 = float(valeurs[0])
+                            valeur_x = float(valeurs[1])
+                            valeur_y = float(valeurs[2])
+                            # On appelle la fonction de la vue Calibration
+                            app.after(0, update_cal_display, valeur_x2, valeur_x, valeur_y)
+                        except ValueError:
+                            print(f"Erreur de conversion (Calibration) : {raw_data}")
+                            
+                    # CAS 2 : On reçoit 1 seule valeur (Le poids en temps réel)
+                    elif len(valeurs) == 1:
+                        # On appelle la fonction de la vue Normale
+                        app.after(0, update_data_display, raw_data)
+
             time.sleep(0.01) 
 
         except serial.SerialException:
-            # Cette exception attrape l'erreur "Handle is invalid" proprement
             print("Connexion série interrompue ou port fermé.")
             is_acquiring = False
             break
         except Exception as e:
             print(f"Erreur de lecture inattendue : {e}")
-            time.sleep(0.1) # Petite pause en cas d'erreur de décodage pour ne pas spammer la console
-
+            time.sleep(0.1)
 def update_data_display(data):
     global latest_reading
     latest_reading = data
@@ -228,8 +240,9 @@ normal_frame = ctk.CTkFrame(content_frame, fg_color="transparent")
 
 instruction_acquisition = ctk.CTkLabel(
     normal_frame,
-    text="Cliquez sur 'Connecter' et puis sur 'Acquisition' " \
-    "pour débuter la prise de mesure",
+    text="Cliquez sur 'Connecter' et puis sur 'Acquisition'." \
+    " Pour débuter la prise de mesure,\n"
+    " déposez la masse au centre de la cible.",
     font=("Roboto", 20, "bold")
 )
 instruction_acquisition.pack(pady=(10, 20))
@@ -289,6 +302,21 @@ btn_Set.pack(pady=20)
 
 # === VUE 3 : MODE Calibration ===
 Cal_frame = ctk.CTkFrame(content_frame)
+
+Calib_label = ctk.CTkLabel(Cal_frame, text="---", font=("Roboto", 48, "bold"))
+Calib_label.pack(pady=30)
+
+def update_cal_display(valeur_x2, valeur_x, valeur_c):
+    # Gestion intelligente des signes pour éviter les "+ -"
+    signe_x = "+" if valeur_x >= 0 else "-"
+    signe_c = "+" if valeur_c >= 0 else "-"
+    
+    # Formatage avec 2 décimales pour chaque coefficient
+    polynome_str = f"{valeur_x2:.2f}X² {signe_x} {abs(valeur_x):.2f}X {signe_c} {abs(valeur_c):.2f}"
+    
+    # Mise à jour du label
+    Calib_label.configure(text=polynome_str)
+
 # Liste initiale des poids pour le menu déroulant
 valeurs_poids = ["0", "20", "40", "60", "80", "100"]
 instruction_calibration = ctk.CTkLabel(

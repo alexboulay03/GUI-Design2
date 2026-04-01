@@ -115,6 +115,7 @@ def convertir_poids(valeur_g, unite_cible):
         return valeur_g
 
 def tare():
+    #"Tare:0\n"
     global latest_reading
     if arduino and arduino.is_open:
         arduino.write(f"Tare:{latest_reading}\n".encode('utf-8'))
@@ -143,6 +144,8 @@ def save_setup():
     # Vous pourriez envoyer ça à l'Arduino ici : arduino.write(f"CAL:{cal_value}\n".encode('utf-8'))
 
 def SetPID():
+     # "gain:valeur\n"
+     #ex: "KpPos:1.5\n"
     global anciennes_valeurs_pid
     nouvelles_valeurs = {
         "KpPos": KpPos_entry.get(),
@@ -165,6 +168,8 @@ def SetPID():
 
 
 def Cal(poid):
+    # "Cal:poid\n"
+    #ex: "Cal:100\n"
     message = f"Cal:{poid}\n"
     if arduino and arduino.is_open:
         arduino.write(message.encode('utf-8'))

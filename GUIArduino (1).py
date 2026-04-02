@@ -17,12 +17,18 @@ anciennes_valeurs_pid = {
     "KiCour": None
 }
 
-#connexion arduino
+#------------------------------------------------------------------
+#   liste de port serie dispo
+#------------------------------------------------------------------
 def get_available_ports():
     ports = serial.tools.list_ports.comports()
     port_list = [port.device for port in ports]
     return port_list if port_list else ["Aucun port"]
 
+
+#------------------------------------------------------------------
+#   connexion serie
+#------------------------------------------------------------------
 def connect_serial():
     global arduino
     selected_port = port_combobox.get()
@@ -42,7 +48,11 @@ def connect_serial():
         status_label.configure(text=f"Erreur: Impossible d'ouvrir {selected_port}", text_color="#e74c3c")
         arduino = None
 
-#reception serie
+#------------------------------------------------------------------
+#   reception serie
+#   si on recois une valeur -> poid
+#   si on recois 3 valeurs -> coeff calibration
+#------------------------------------------------------------------
 def read_serial_data():
     global is_acquiring
     while is_acquiring and arduino and arduino.is_open:
@@ -77,7 +87,11 @@ def read_serial_data():
             print(f"Erreur de lecture{e}")
             time.sleep(0.1)
 
-
+#------------------------------------------------------------------
+#   actualisation des affichage
+#   affichage poid
+#   affichage coeff calibration
+#------------------------------------------------------------------
 def update_data_display(data):
     global latest_reading
     latest_reading = data
@@ -90,7 +104,9 @@ def update_data_display(data):
     except ValueError:
         print(f"Erreur de lecture")
 
+#-------------------------------------------------------------------------
 #Acquisition
+#--------------------------------------------------------------------------
 def start_acquisition():
     global is_acquiring
     if not arduino or not arduino.is_open:
@@ -102,10 +118,16 @@ def start_acquisition():
         status_label.configure(text="Status: Acquisition en cours", text_color="#2ecc71")
         app.after(1000, executer_cal_et_tare)
 
+#-----------------------------------------------------------------------------
+# executution calibartion et du tare
+#-----------------------------------------------------------------------------
 def executer_cal_et_tare():
     if is_acquiring and arduino and arduino.is_open:
         app.after(500, tare)
 
+#-----------------------------------------------------------------------------
+# Convertir gramme en oz ou N
+#-----------------------------------------------------------------------------
 def convertir_poids(valeur_g, unite_cible):
     if unite_cible == "oz":
         return valeur_g * 0.03527396
@@ -114,6 +136,9 @@ def convertir_poids(valeur_g, unite_cible):
     else:
         return valeur_g
 
+#-----------------------------------------------------------------------------
+# Tare
+#-----------------------------------------------------------------------------
 def tare():
     #"Tare:0\n"
     global latest_reading
@@ -123,7 +148,9 @@ def tare():
     else:
         status_label.configure(text="Erreur: Non connecté", text_color="#e74c3c")
 
-# Changement mode
+#-----------------------------------------------------------------------------
+# Changer les mode afficher (normal(balance), setup(regulateur), calibration)
+#-----------------------------------------------------------------------------
 def change_mode(choice):
     normal_frame.pack_forget()
     setup_frame.pack_forget()
@@ -137,12 +164,11 @@ def change_mode(choice):
     elif choice == "Mode Calibration":
         Cal_frame.pack(fill="both", expand=True, pady=10)
 
-def save_setup():
-    """Exemple de fonction pour le mode Setup"""
-    cal_value = cal_entry.get()
-    print(f"Sauvegarde de la calibration: {cal_value}")
-    # Vous pourriez envoyer ça à l'Arduino ici : arduino.write(f"CAL:{cal_value}\n".encode('utf-8'))
 
+#-----------------------------------------------------------------------------
+# enregistrer les gain actuel des regulateurs
+# envoyer les nouveaux gain s'ils ont changer
+#-----------------------------------------------------------------------------
 def SetPID():
      # "gain:valeur\n"
      #ex: "KpPos:1.5\n"
@@ -166,7 +192,9 @@ def SetPID():
                     print(f"Mise à jour envoyée : {message.strip()}")
                 anciennes_valeurs_pid[parametre] = valeur_lue
 
-
+#-----------------------------------------------------------------------------
+# calibration
+#-----------------------------------------------------------------------------
 def Cal(poid):
     # "Cal:poid\n"
     #ex: "Cal:100\n"
@@ -300,6 +328,9 @@ instruction_calibration = ctk.CTkLabel(
 )
 instruction_calibration.pack(pady=(10, 20))
 
+#-----------------------------------------------------------------------------
+# envoyer le poid mesurer poid la calibration
+#-----------------------------------------------------------------------------
 def envoyer_poids_selectionne():
     selection = menu_poids.get()
     poids_brut = selection.replace(" ✓", "")
@@ -323,7 +354,9 @@ btn_Envoyer_Poids.pack(pady=10)
 separation = ctk.CTkFrame(Cal_frame, height=2, width=200, fg_color="gray")
 separation.pack(pady=15)
 
-
+#-----------------------------------------------------------------------------
+# envoyer les calibrations au arduino
+#-----------------------------------------------------------------------------
 def envoyer_calibration():
     valeurs_attendues = ["0 ✓", "20 ✓", "40 ✓", "60 ✓", "80 ✓", "100 ✓"]
     
@@ -343,7 +376,9 @@ btn_Done = ctk.CTkButton(
 )
 btn_Done.pack(pady=10)
 
-
+#-----------------------------------------------------------------------------
+# changement unite afficher
+#-----------------------------------------------------------------------------
 def on_unite_change(nouvelle_unite):
     """Met à jour l'affichage immédiatement quand on change d'unité via le menu."""
     global latest_reading
